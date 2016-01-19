@@ -9,6 +9,8 @@ from flask import Flask,render_template,g
 from config import Dev_Config
 from vzerGit import lm,mail,admin,db
 from vzerGit.views import view
+from vzerGit.models import Data_Wrappers
+data=Data_Wrappers()
 
 DEFAULT_APP_NAME="vzer-gitlab"
 
@@ -28,7 +30,7 @@ def create_app(config=None,app_name=None,modules=None):
     configure_errorhandlers(app)
     configure_extensions(app)
     configure_modules(app,modules)
-
+    configure_before_handlers(app)
     return app
 
 #config modules
@@ -115,3 +117,15 @@ def configure_errorhandlers(app):
     def unauthorized():
         return render_template("errors/401.html"),401
 
+#config before handlers
+def configure_before_handlers(app):
+    if app.testing:
+        return
+    @app.before_request
+    def before_request():
+        #g.MyBlogMenu=data.get_all_category()
+        pass
+
+    @lm.user_loader
+    def load_user(user_id):
+        return data.get_user_byid(user_id=user_id)

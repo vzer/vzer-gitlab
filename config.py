@@ -44,7 +44,7 @@ class Dev_Config(Base_Config):
     DEBUG = True
 
     #mysql config
-    MYSQL_DB = "vzerblog"
+    MYSQL_DB = "manage_gitlab"
     MYSQL_USER = "vzer"
     MYSQL_PASS = "wwwlin123"
     MYSQL_HOST = "192.168.1.246"
