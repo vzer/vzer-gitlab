@@ -1,0 +1,6 @@
+<div>
+    <p>Dear:{{ nickname }}</p>
+    <p>管理员已经审核了你的账户，你可用通过一下链接登录后台</p>
+    <p><a href="{{ url_for("admin.login",_external = True) }}">{{ url_for("admin.login",_external = True) }}</a></p>
+
+</div>

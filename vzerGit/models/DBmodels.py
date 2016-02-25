@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import UserMixin
 import base64
 
+
 #后台用户认证
 class Manage_user(db.Model,UserMixin):
     __table_args__={"extend_existing":True,
@@ -73,7 +74,7 @@ class Manage_user(db.Model,UserMixin):
         return False
 
     def get_id(self):
-        return unicode(self.id)
+        return unicode("admin-%s"%self.id)
 
 
     def __repr__(self):
@@ -88,7 +89,7 @@ class Gitlab_Group(db.Model):
     __tablename__="gitlab_group"
     id=db.Column(db.INTEGER,primary_key=True,autoincrement=True,doc="表主键id")
     gitlab_name=db.Column(db.String(100),doc="gitlab名称")
-    gitlab_url=db.Column(db.String(200),doc="gitlab地址")
+    gitlab_url=db.Column(db.String(200),unique=True,doc="gitlab地址")
     gitlab_username=db.Column(db.String(100),doc="gitlab管理账户")
     gitlab_password=db.Column(db.String(100),doc="gitlab管理密码")
     is_active=db.Column(db.Boolean,default=False,doc="是否启用")
@@ -110,16 +111,17 @@ class Gitlab_Group(db.Model):
         return base64.decodestring(self.gitlab_password[8:])
 
     def __repr__(self):
-        return "GitLab Name:%s"%self.gitlab_name
+        return "%s"%self.gitlab_name
 
 #gitlab_user
-class Gitlab_user(db.Model):
+class Gitlab_user(db.Model,UserMixin):
     __table_args__={"extend_existing":True,
                     "mysql_engine":"InnoDB",
                     "mysql_charset":"utf8"}
     __tablename__="gitlab_user"
     id=db.Column(db.INTEGER,primary_key=True,autoincrement=True,doc="表用户id")
     gitlab_group_id=db.Column(db.INTEGER,db.ForeignKey("gitlab_group.id"),doc="所属gitlab id")
+    gitlab_group=db.relationship("Gitlab_Group",backref=db.backref("gitlab_user",lazy='dynamic'),lazy='select')
     gitlab_id=db.Column(db.INTEGER,default=None,doc="gitlab中id")
     username=db.Column(db.String(100),doc="登录名")
     password=db.Column(db.String(100),doc="gitlab账户密码")
@@ -134,14 +136,41 @@ class Gitlab_user(db.Model):
     is_admin=db.Column(db.Boolean,default=False,doc="是否是管理员")
     created_at=db.Column(db.DateTime,doc="创建时间")
 
-    def set_password(self,passowrd):
-        self.password=generate_password_hash(password=passowrd)
 
-    def check_password(self,password):
-        return check_password_hash(self.password,password=password)
+    def set_password(self,passowrd):
+        encrypt_world=base64.encodestring(passowrd)
+        self.password="encrypt_"+encrypt_world
+
+    def get_password(self):
+        return base64.decodestring(self.password[8:])
+
+    def is_active(self):
+        if self.state=="active":
+            return True
+        else:
+            return False
+
+    def is_admins(self):
+        if self.is_admin:
+            return True
+        else:
+            return False
+
+
+    def is_authenticated(self):
+        return True
+
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return unicode("user-%s"%self.id)
+
+
 
     def __repr__(self):
-        return "GitLab User:%s"%self.name
+        return "GitLab User:%s"%self.username
 
 #gitlab_projects
 class Gitlab_projects(db.Model):

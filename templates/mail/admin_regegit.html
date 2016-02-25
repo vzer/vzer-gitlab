@@ -1,6 +1,13 @@
 <div>
-    <p>Dear:{{ nickname }}</p>
-    <p>管理员已经审核了你的账户，你可用通过一下链接登录后台</p>
+    <p>Dear:管理员</p>
+    <p>用户{{ nickname }} 注册了后台账户，信息如下：</p>
+    <ul>
+        <li>用户名：{{ username }}</li>
+        <li>用户密码：{{ password|safe }}</li>
+        <li>邮箱地址：{{ email|safe }}</li>
+        <li>真实姓名：{{ nickname|safe }}</li>
+    </ul>
+    <p>你可用通过一下链接登录后台</p>
     <p><a href="{{ url_for("admin.login",_external = True) }}">{{ url_for("admin.login",_external = True) }}</a></p>
 
 </div>

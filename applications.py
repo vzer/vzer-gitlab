@@ -8,14 +8,14 @@ from logging.handlers import SMTPHandler,RotatingFileHandler
 from flask import Flask,render_template,g
 from config import Dev_Config
 from vzerGit import lm,mail,admin,db
-from vzerGit.views import view
+from vzerGit.views import gitlab_user
 from vzerGit.models import Data_Wrappers
 data=Data_Wrappers()
 
 DEFAULT_APP_NAME="vzer-gitlab"
 
 DEFAULT_MODULES=(
-    (view.gitmanage,"/"),
+    (gitlab_user.user,"/user"),
 )
 def create_app(config=None,app_name=None,modules=None):
     if app_name is None:
@@ -128,4 +128,7 @@ def configure_before_handlers(app):
 
     @lm.user_loader
     def load_user(user_id):
-        return data.get_user_byid(user_id=user_id)
+        if "admin" in user_id:
+            return data.get_user_byid(user_id=int(user_id[6:]))
+        elif "user" in user_id:
+            return data.get_gitlabuser_byid(user_id=int(user_id[5:]))

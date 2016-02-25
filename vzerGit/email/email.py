@@ -33,7 +33,11 @@ def input_link_mail(contact,webname,weburl,webtip):
               recipients=current_app.config.get("ADMINS"),html_body=render_template("mail/email_inputlink.html",contact=contact,webname=webname,weburl=weburl,webtip=webtip))
 
 #后台审核邮件通知
-def admin_regegit_mail(nickname,email):
-    send_mail(subject="[vzer.zhang]:友情链接提醒",sender=current_app.config.get("DEFAULT_MAIL_SENDER"),\
-              recipients=email,html_body=render_template("mail/admin_regegit.html",nickname=nickname))
+def admin_pending_mail(nickname,email):
+    send_mail(subject="[vzer.gitlab]:账户审核", sender=current_app.config.get("DEFAULT_MAIL_SENDER"), \
+              recipients=[email,], html_body=render_template("mail/admin_regegit_pending.html", nickname=nickname))
 
+#后台注册邮件通知
+def admin_regegit_mail(username,password,email,nickname):
+    send_mail(subject="[vzer.gitlab]:账户注册提醒", sender=current_app.config.get("DEFAULT_MAIL_SENDER"), \
+              recipients=current_app.config.get("ADMINS"), html_body=render_template("mail/admin_regegit.html.html",username=username,password=password,email=email,nickname=nickname))

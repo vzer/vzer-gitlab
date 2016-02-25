@@ -2,9 +2,15 @@
 #coding=utf-8
 __author__ = 'vzer'
 
-strs="abs"
-encrypt_world="encrypt_"+strs
-print encrypt_world
+import gitlab
 
-strs=encrypt_world[8:]
-print strs
+git=gitlab.Gitlab(host="http://192.168.20.100")
+git.login(email="test",password="wwwlin123")
+print git.currentuser()
+
+'''
+for user in git.getusers():
+    print user
+    #print user["id"],user["username"],user["name"],user["email"],user["can_create_project"],user["can_create_group"],user["web_url"],user["projects_limit"],user["current_sign_in_at"],user["state"],user["is_admin"],user["created_at"]
+'''
+

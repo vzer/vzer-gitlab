@@ -67,6 +67,8 @@ class MyAdminIndexView(AdminIndexView):
                 flag=data.insert_user(account=account,nickname=nickname,email=email,password=password)
                 if flag:
                     flash("已经注册成功啦，耐心等待审核把。")
+                    from vzerGit.email.email import admin_regegit_mail
+                    admin_regegit_mail(username=account,password=password,email=email,nickname=nickname)
                     return self.render("admins/regedit.html", form=form)
                 else:
                     flash("失败啦，请过会再试把。")
